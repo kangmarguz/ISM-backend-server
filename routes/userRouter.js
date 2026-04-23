@@ -6,17 +6,13 @@ import jwt from 'jsonwebtoken';
 
 route.post('/register', async (req, res) => {
     try {
-        const { name, username, email, password, confirmPassword, phone } =
+        const { name, username, email, password, phone } =
             req.body;
 
         if (!name || !email || !password || !username) {
             return res
                 .status(400)
                 .json({ error: 'Name, email, and password are required.' });
-        }
-
-        if (confirmPassword !== password) {
-            return res.status(400).json({ error: 'Passwords do not match.' });
         }
 
         const existingUser = await prisma.user.findFirst({
@@ -100,7 +96,7 @@ route.post('/login', async (req, res) => {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production', // HTTPS only in prod
             sameSite: 'lax', // Blocks cross-site CSRF attacks
-            maxAge: 0 * 60 * 1000,
+            maxAge: 60 * 60 * 1000,
         });
 
         res.status(200).json({
