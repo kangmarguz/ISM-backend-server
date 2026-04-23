@@ -1,0 +1,19 @@
+{
+  "name": "ism-backend-system",
+  "version": "1.0.0",
+  "description": "demon package system backend ISM.",
+  "keywords": [
+    "ISM"
+  ],
+  "license": "ISC",
+  "author": "K@nginwza007",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
+  }
+}
