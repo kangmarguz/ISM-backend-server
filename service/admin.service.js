@@ -18,3 +18,12 @@ export const getAllUsersService = async () => {
     });
     return result;
 };
+
+export const getAllAdminService = async () => {
+    const result = await prisma.user.findMany({
+        where: {
+            role: 'ADMIN',
+        }
+    });
+    return result;
+}

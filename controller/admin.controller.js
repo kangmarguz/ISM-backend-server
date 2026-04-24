@@ -1,4 +1,4 @@
-import { getAllUsersService } from "../service/admin.service.js";
+import { getAllAdminService, getAllUsersService } from "../service/admin.service.js";
 
 export const getAllUsers = async (req, res, next) => {
     try {
@@ -9,6 +9,16 @@ export const getAllUsers = async (req, res, next) => {
         next(error);
     }
 };
+
+export const getAllAdmins = async (req, res, next) => {
+    try {
+        const result = await getAllAdminService();
+        res.json({result});
+    } catch (error) {
+        console.log(error);
+        next(error);
+    }
+}
 
 export const updateUserProfile = async (req, res, next) => {
     try {
