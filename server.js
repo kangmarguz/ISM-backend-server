@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url';
 import cors from 'cors';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
+import errorHandler from './middleware/error.middleware.js';
 
 //== ROUTE ==
 const __filename = fileURLToPath(import.meta.url);
@@ -30,6 +31,8 @@ for (const file of files) {
     const route = await import(`./routes/${file}`);
     app.use('/api', route.default);
 }
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
     console.log(`Server started on port: ${PORT}`);

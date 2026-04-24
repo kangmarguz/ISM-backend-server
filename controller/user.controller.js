@@ -6,10 +6,10 @@ import {
     userRegisterService,
 } from '../service/user.service.js';
 
-export const userResgister = async (req, res) => {
+export const userResgister = async (req, res, next) => {
     try {
         const { name, username, email, password, phone } = req.body;
-        
+
         const result = await userRegisterService(
             name,
             username,
@@ -24,11 +24,11 @@ export const userResgister = async (req, res) => {
         });
     } catch (error) {
         console.error('Error registering user:', error);
-        res.status(500).json({ error: 'Internal server error.' });
+        next(error);
     }
 };
 
-export const userLogin = async (req, res) => {
+export const userLogin = async (req, res, next) => {
     try {
         const { email, password } = req.body;
         const result = await userLoginService(email, password);
@@ -46,6 +46,6 @@ export const userLogin = async (req, res) => {
         });
     } catch (error) {
         console.error('Error logging in:', error);
-        res.status(500).json({ error: 'Internal server error.' });
+        next(error);
     }
 };

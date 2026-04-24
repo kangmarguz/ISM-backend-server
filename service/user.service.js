@@ -1,10 +1,11 @@
 import prisma from '../config/prismaclient.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import errorResponse from '../utils/error.js';
 
 export const userLoginService = async (email, password) => {
     if (!email || !password) {
-        throw new Error('Email and password are required.');
+        return errorResponse('Email and password are required.', 400);
     }
 
     const user = await prisma.user.findUnique({
@@ -12,12 +13,12 @@ export const userLoginService = async (email, password) => {
     });
 
     if (!user) {
-        throw new Error('Invalid email or password.');
+        return errorResponse('Invalid email or password.', 401);
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-        throw new Error('Invalid email or password.');
+        return errorResponse('Invalid email or password.', 401);
     }
 
     const token = jwt.sign(
@@ -45,23 +46,22 @@ export const userRegisterService = async (
     phone,
 ) => {
     if (!name || !email || !password || !username) {
-        return res
-            .status(400)
-            .json({ error: 'Name, email, and password are required.' });
+        return errorResponse('Name, email, and password are required.', 400);
     }
-
+    
     const existingUser = await prisma.user.findFirst({
         where: {
             OR: [{ email }, { username }],
         },
     });
 
+
     if (existingUser) {
         if (existingUser.email === email) {
-            return res.status(409).json({ error: 'Email already registered.' });
+            return errorResponse('Email already registered.', 409);
         }
         if (existingUser.username === username) {
-            return res.status(409).json({ error: 'Username already taken.' });
+            return errorResponse('Username already taken.', 409);
         }
     }
 
