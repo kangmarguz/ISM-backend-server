@@ -48,13 +48,12 @@ export const userRegisterService = async (
     if (!name || !email || !password || !username) {
         return errorResponse('Name, email, and password are required.', 400);
     }
-    
+
     const existingUser = await prisma.user.findFirst({
         where: {
             OR: [{ email }, { username }],
         },
     });
-
 
     if (existingUser) {
         if (existingUser.email === email) {

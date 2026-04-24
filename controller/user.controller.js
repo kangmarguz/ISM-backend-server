@@ -5,6 +5,7 @@ import {
     userLoginService,
     userRegisterService,
 } from '../service/user.service.js';
+import e from 'express';
 
 export const userResgister = async (req, res, next) => {
     try {
@@ -46,6 +47,22 @@ export const userLogin = async (req, res, next) => {
         });
     } catch (error) {
         console.error('Error logging in:', error);
+        next(error);
+    }
+};
+
+export const userLogout = async (req, res, next) => {
+    try {
+        res.clearCookie('token', {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'strict',
+            path: '/',
+        });
+
+        res.status(200).json({ code: 200, message: 'Logout successful' });
+    } catch (error) {
+        console.error('Error logging out:', error);
         next(error);
     }
 };
