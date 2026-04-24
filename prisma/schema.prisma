@@ -20,6 +20,7 @@ model User {
   email                 String  @unique
   phone                 String?
   role                  Role    @default(USER)
+  isActive              Boolean @default(true)
   passwordResetRequired Boolean @default(false)
 
   createdAt DateTime @default(now())
