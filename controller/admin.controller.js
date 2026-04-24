@@ -9,3 +9,13 @@ export const getAllUsers = async (req, res, next) => {
         next(error);
     }
 };
+
+export const updateUserProfile = async (req, res, next) => {
+    try {
+        //TODO: update user profile
+        res.json({message: 'Update user profile endpoint'});
+    } catch (error) {
+        console.log(error);
+        next(error);
+    }
+}
