@@ -3,8 +3,10 @@ import errorResponse from '../utils/error.js';
 
 const authCheck = (req, res, next) => {
     try {
+        //get token from cookie
         let token = req.cookies?.token;
 
+        //IF DONT HAVE TOKEN IN COOKIE THEN CHECK IN HEADER
         if (!token && req.headers.authorization) {
             const authHeader = req.headers.authorization;
 
@@ -18,7 +20,7 @@ const authCheck = (req, res, next) => {
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log("DECODE FROM JWT : ",decoded);
+        //SET USER INFO IN REQ OBJECT
         req.user = decoded;
         next();
 
