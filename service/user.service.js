@@ -2,8 +2,11 @@ import prisma from '../config/prismaclient.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import errorResponse from '../utils/error.js';
+import { saltPassword } from '../utils/salt.password.js';
 
-export const userLoginService = async (email, password) => {
+export const userLoginService = async (username, email, password) => {
+    console.log(username, email, password);
+
     if (!email || !password) {
         return errorResponse('Email and password are required.', 400);
     }
@@ -64,9 +67,7 @@ export const userRegisterService = async (
         }
     }
 
-    const saltRounds = parseInt(process.env.SALTED_ENCODE);
-
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const hashedPassword = await saltPassword(password);
 
     const user = await prisma.user.create({
         data: {
@@ -75,6 +76,39 @@ export const userRegisterService = async (
             email,
             phone: phone || '',
             password: hashedPassword,
+        },
+    });
+
+    return user;
+};
+
+export const userCreateByAdminService = async (name, username, email, role) => {
+    if (!name || !username || !email) {
+        return errorResponse('Name, username, and email are required.', 400);
+    }
+
+    const existingUser = await prisma.user.findFirst({
+        where: {
+            OR: [{ username: username }, { email: email }],
+        },
+    });
+
+    if (existingUser) {
+        return errorResponse('Username or email already in use.', 409);
+    }
+
+    const hashedPassword = await saltPassword(
+        process.env.DEFAULT_USER_PASSWORD,
+    );
+
+    const user = await prisma.user.create({
+        data: {
+            name,
+            username,
+            email,
+            password: hashedPassword,
+            role: role || 'GUEST',
+            passwordResetRequired: true,
         },
     });
 

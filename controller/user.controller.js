@@ -2,6 +2,7 @@ import prisma from '../config/prismaclient.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import {
+    userCreateByAdminService,
     userLoginService,
     userRegisterService,
 } from '../service/user.service.js';
@@ -31,8 +32,8 @@ export const userResgister = async (req, res, next) => {
 
 export const userLogin = async (req, res, next) => {
     try {
-        const { email, password } = req.body;
-        const result = await userLoginService(email, password);
+        const {username, email, password } = req.body;
+        const result = await userLoginService(username, email, password);
 
         res.cookie('token', result.token, {
             httpOnly: true,
@@ -49,6 +50,20 @@ export const userLogin = async (req, res, next) => {
         console.error('Error logging in:', error);
         next(error);
     }
+};
+
+export const userCreateByAdmin = async (req, res, next) => {
+try {
+    const { name, username, email, role } = req.body;
+    const result = await userCreateByAdminService(name, username, email, role);
+    res.status(201).json({
+        message: 'User created successfully',
+        userId: result.id,
+    });
+} catch (error) {
+    console.log(error);
+    next(error);
+}
 };
 
 export const userLogout = async (req, res, next) => {
