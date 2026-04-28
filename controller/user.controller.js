@@ -45,6 +45,7 @@ export const userLogin = async (req, res, next) => {
         return res.status(200).json({
             message: 'Login successful',
             user: result.user,
+            token: result.token // mocking without CORS
         });
     } catch (error) {
         console.error('Error logging in:', error);

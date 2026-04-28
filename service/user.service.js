@@ -7,12 +7,12 @@ import { saltPassword } from '../utils/salt.password.js';
 export const userLoginService = async (username, email, password) => {
     console.log(username, email, password);
 
-    if (!email || !password) {
+    if (!username || !password) {
         return errorResponse('Email and password are required.', 400);
     }
 
     const user = await prisma.user.findUnique({
-        where: { email },
+        where: { username },
     });
 
     if (!user) {
