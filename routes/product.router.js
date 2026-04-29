@@ -1,5 +1,5 @@
 import express from 'express';
-import { createProduct } from '../controller/product.controller.js';
+import { createProduct, createVanBooking, getHistory } from '../controller/product.controller.js';
 import authCheck from '../middleware/auth.checkToken.js';
 import { authorizeRoles } from '../middleware/auth.useRole.js';
 
@@ -11,5 +11,7 @@ export const isUser = authorizeRoles('uSeR');
 // 2 check user role
 // if pass all just created product.
 route.post('/create-product', authCheck, isUser, createProduct);
+route.post('/booking', authCheck, createVanBooking);
+route.get('/get-history/:id', getHistory);
 
 export default route;

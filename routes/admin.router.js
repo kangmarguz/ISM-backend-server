@@ -9,4 +9,4 @@ route.get('/get-all-users', authCheck, authorizeRoles('aDmIN'), getAllUsers);
 route.get('/get-all-admins', authCheck, authorizeRoles('aDmIN'), getAllAdmins);
 route.put('/update-user', updateUserProfile);
 
-export default route;
+export default route;   
