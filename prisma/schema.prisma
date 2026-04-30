@@ -34,6 +34,7 @@ model Task {
   startDate    DateTime
   endDate      DateTime
   description  String?
+  isActive     Boolean      @default(true)
   status       TaskStatus   @default(PENDING)
   assignedTo   User?        @relation(fields: [assignedToId], references: [id])
   assignedToId String?      @db.Uuid
@@ -64,4 +65,5 @@ enum TaskStatus {
   PENDING
   IN_PROGRESS
   COMPLETED
+  CANCEL
 }
