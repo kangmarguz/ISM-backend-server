@@ -257,3 +257,71 @@ export const resetUserPasswordService = async (id) => {
 
     return user;
 };
+
+export const updateUserPasswordService = async (id, data, requestUser) => {
+    if (!id) {
+        return errorResponse('User id is required.', 400);
+    }
+
+    const password = data?.newPassword || data?.password;
+    const currentPassword = data?.currentPassword;
+
+    if (!password || typeof password !== 'string') {
+        return errorResponse('Password is required.', 400);
+    }
+
+    if (password.length < 8) {
+        return errorResponse('Password must be at least 8 characters.', 400);
+    }
+
+    const isAdmin = requestUser?.role?.toLowerCase() === 'admin';
+    const isSameUser = requestUser?.userId === id;
+
+    if (!isAdmin && !isSameUser) {
+        return errorResponse('Forbidden', 403);
+    }
+
+    const existingUser = await prisma.user.findUnique({
+        where: { id },
+    });
+
+    if (!existingUser) {
+        return errorResponse('User not found.', 404);
+    }
+
+    if (!isAdmin && currentPassword) {
+        const isMatch = await bcrypt.compare(currentPassword, existingUser.password);
+
+        if (!isMatch) {
+            return errorResponse('Current password is incorrect.', 400);
+        }
+    }
+
+    if (!isAdmin && !currentPassword && !existingUser.passwordResetRequired) {
+        return errorResponse('Current password is required.', 400);
+    }
+
+    const hashedPassword = await saltPassword(password);
+
+    const user = await prisma.user.update({
+        where: { id },
+        data: {
+            password: hashedPassword,
+            passwordResetRequired: false,
+        },
+        select: {
+            id: true,
+            name: true,
+            username: true,
+            email: true,
+            phone: true,
+            role: true,
+            isActive: true,
+            passwordResetRequired: true,
+            createdAt: true,
+            updatedAt: true,
+        },
+    });
+
+    return user;
+};

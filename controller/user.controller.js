@@ -5,6 +5,7 @@ import {
     getAllUserByAdminService,
     resetUserPasswordService,
     updateUserActiveService,
+    updateUserPasswordService,
     updateUserRoleService,
     userCreateByAdminService,
     userLoginService,
@@ -144,6 +145,21 @@ export const resetUserPassword = async (req, res, next) => {
         });
     } catch (error) {
         console.error('Error resetting user password:', error);
+        next(error);
+    }
+};
+
+export const updateUserPassword = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const user = await updateUserPasswordService(id, req.body, req.user);
+
+        res.status(200).json({
+            message: 'User password updated successfully',
+            user,
+        });
+    } catch (error) {
+        console.error('Error updating user password:', error);
         next(error);
     }
 };
