@@ -9,7 +9,7 @@ export const isUser = authorizeRoles('uSeR');
 
 route.post('/create-product', authCheck, isUser, createProduct);
 route.get('/booking', authCheck, getVanBookingHistory);
-route.post('/booking', authCheck, getHistory);
+route.post('/booking', authCheck, createVanBooking);
 route.patch('/booking/:id', authCheck, updateBookingStatus);
 route.get('/history/:id', getHistory);
 route.put('/history/:id', getHistory);  

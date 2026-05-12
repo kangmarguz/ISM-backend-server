@@ -18,7 +18,10 @@ export const userLoginService = async (username, email, password) => {
     }
 
     if (!user.isActive) {
-        return errorResponse('Your account is inactive. Please contact admin.', 403);
+        return errorResponse(
+            'Your account is inactive. Please contact admin.',
+            403,
+        );
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -39,6 +42,7 @@ export const userLoginService = async (username, email, password) => {
             name: user.name,
             email: user.email,
             role: user.role,
+            reset: user.passwordResetRequired,
         },
     };
 };
@@ -290,7 +294,10 @@ export const updateUserPasswordService = async (id, data, requestUser) => {
     }
 
     if (!isAdmin && currentPassword) {
-        const isMatch = await bcrypt.compare(currentPassword, existingUser.password);
+        const isMatch = await bcrypt.compare(
+            currentPassword,
+            existingUser.password,
+        );
 
         if (!isMatch) {
             return errorResponse('Current password is incorrect.', 400);
