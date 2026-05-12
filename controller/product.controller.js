@@ -1,4 +1,5 @@
 import prisma from '../config/prismaclient.js';
+import errorResponse from '../utils/error.js';
 
 export const createProduct = async (req, res, next) => {
     res.json({
@@ -43,7 +44,11 @@ export const createVanBooking = async (req, res, next) => {
 
 export const getVanBookingHistory = async (req, res, next) => {
     try {
-        const result = await prisma.task.findMany();
+        const result = await prisma.task.findMany({
+            where: {
+                isActive: true
+            }
+        });
         res.json({
             status: {
                 code: '200',
@@ -112,6 +117,68 @@ export const deleteHistory = async (req, res, next) => {
             status: {
                 code: '200',
                 message: 'Delete success.',
+            },
+            result,
+        });
+    } catch (error) {
+        console.log(error);
+        next(error);
+    }
+};
+
+export const updateBookingStatus = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        console.log("STATUS INPUT", status);
+        
+        if (!id) {
+            return errorResponse('Booking id is required.', 400);
+        }
+
+        if (!status || typeof status !== 'string') {
+            return errorResponse('Status is required.', 400);
+        }
+
+        const normalizedStatus = status.toUpperCase();
+        const allowedStatuses = ['PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCEL'];
+
+        if (!allowedStatuses.includes(normalizedStatus)) {
+            return errorResponse('Invalid booking status.', 400);
+        }
+
+        const existingBooking = await prisma.task.findUnique({
+            where: { id },
+        });
+
+        if (!existingBooking) {
+            return errorResponse('Booking not found.', 404);
+        }
+
+        const result = await prisma.task.update({
+            where: { id },
+            data: {
+                status: normalizedStatus,
+            },
+            select: {
+                id: true,
+                title: true,
+                description: true,
+                startDate: true,
+                endDate: true,
+                status: true,
+                isActive: true,
+                assignedToId: true,
+                createdAt: true,
+                updatedAt: true,
+            },
+        });
+
+        res.json({
+            status: {
+                code: '200',
+                message: 'Booking status updated successfully.',
             },
             result,
         });

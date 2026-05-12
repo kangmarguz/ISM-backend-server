@@ -1,5 +1,5 @@
 import express from 'express';
-import { createProduct, createVanBooking, deleteHistory, getHistory, getVanBookingHistory } from '../controller/product.controller.js';
+import { createProduct, createVanBooking, deleteHistory, getHistory, getVanBookingHistory, updateBookingStatus } from '../controller/product.controller.js';
 import authCheck from '../middleware/auth.checkToken.js';
 import { authorizeRoles } from '../middleware/auth.useRole.js';
 
@@ -10,6 +10,7 @@ export const isUser = authorizeRoles('uSeR');
 route.post('/create-product', authCheck, isUser, createProduct);
 route.get('/booking', authCheck, getVanBookingHistory);
 route.post('/booking', authCheck, getHistory);
+route.patch('/booking/:id', authCheck, updateBookingStatus);
 route.get('/history/:id', getHistory);
 route.put('/history/:id', getHistory);  
 route.delete('/history/:id', deleteHistory);
