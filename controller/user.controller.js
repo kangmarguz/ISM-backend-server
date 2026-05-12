@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import {
     getAllUserByAdminService,
+    resetUserPasswordService,
     updateUserActiveService,
     updateUserRoleService,
     userCreateByAdminService,
@@ -128,6 +129,21 @@ export const updateUserActive = async (req, res, next) => {
         });
     } catch (error) {
         console.error('Error updating user active status:', error);
+        next(error);
+    }
+};
+
+export const resetUserPassword = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const user = await resetUserPasswordService(id);
+
+        res.status(200).json({
+            message: 'User password reset successfully',
+            user,
+        });
+    } catch (error) {
+        console.error('Error resetting user password:', error);
         next(error);
     }
 };

@@ -5,8 +5,6 @@ import errorResponse from '../utils/error.js';
 import { saltPassword } from '../utils/salt.password.js';
 
 export const userLoginService = async (username, email, password) => {
-    console.log(username, email, password);
-
     if (!username || !password) {
         return errorResponse('Email and password are required.', 400);
     }
@@ -17,6 +15,10 @@ export const userLoginService = async (username, email, password) => {
 
     if (!user) {
         return errorResponse('Invalid email or password.', 401);
+    }
+
+    if (!user.isActive) {
+        return errorResponse('Your account is inactive. Please contact admin.', 403);
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -201,6 +203,44 @@ export const updateUserActiveService = async (id, isActive) => {
     const user = await prisma.user.update({
         where: { id },
         data: { isActive },
+        select: {
+            id: true,
+            name: true,
+            username: true,
+            email: true,
+            phone: true,
+            role: true,
+            isActive: true,
+            passwordResetRequired: true,
+            createdAt: true,
+            updatedAt: true,
+        },
+    });
+
+    return user;
+};
+
+export const resetUserPasswordService = async (id) => {
+    if (!id) {
+        return errorResponse('User id is required.', 400);
+    }
+
+    const existingUser = await prisma.user.findUnique({
+        where: { id },
+    });
+
+    if (!existingUser) {
+        return errorResponse('User not found.', 404);
+    }
+
+    const hashedPassword = await saltPassword('12345678');
+
+    const user = await prisma.user.update({
+        where: { id },
+        data: {
+            password: hashedPassword,
+            passwordResetRequired: true,
+        },
         select: {
             id: true,
             name: true,
