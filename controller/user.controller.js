@@ -2,6 +2,9 @@ import prisma from '../config/prismaclient.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import {
+    getAllUserByAdminService,
+    updateUserActiveService,
+    updateUserRoleService,
     userCreateByAdminService,
     userLoginService,
     userRegisterService,
@@ -79,6 +82,52 @@ export const userLogout = async (req, res, next) => {
         res.status(200).json({ code: 200, message: 'Logout successful' });
     } catch (error) {
         console.error('Error logging out:', error);
+        next(error);
+    }
+};
+
+export const getAllUserByAdmin = async (req, res, next) => {
+    try {
+        const users = await getAllUserByAdminService();
+
+        res.status(200).json({
+            message: 'Users fetched successfully',
+            users,
+        });
+    } catch (error) {
+        console.error('Error fetching users by admin:', error);
+        next(error);
+    }
+};
+
+export const updateUserRole = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { role } = req.body;
+        const user = await updateUserRoleService(id, role);
+
+        res.status(200).json({
+            message: 'User role updated successfully',
+            user,
+        });
+    } catch (error) {
+        console.error('Error updating user role:', error);
+        next(error);
+    }
+};
+
+export const updateUserActive = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { isActive } = req.body;
+        const user = await updateUserActiveService(id, isActive);
+
+        res.status(200).json({
+            message: 'User active status updated successfully',
+            user,
+        });
+    } catch (error) {
+        console.error('Error updating user active status:', error);
         next(error);
     }
 };

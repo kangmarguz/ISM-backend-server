@@ -114,3 +114,106 @@ export const userCreateByAdminService = async (name, username, email, role) => {
 
     return user;
 };
+
+export const getAllUserByAdminService = async () => {
+    const users = await prisma.user.findMany({
+        select: {
+            id: true,
+            name: true,
+            username: true,
+            email: true,
+            phone: true,
+            role: true,
+            isActive: true,
+            passwordResetRequired: true,
+            createdAt: true,
+            updatedAt: true,
+        },
+        orderBy: {
+            createdAt: 'desc',
+        },
+    });
+
+    return users;
+};
+
+export const updateUserRoleService = async (id, role) => {
+    if (!id) {
+        return errorResponse('User id is required.', 400);
+    }
+
+    if (!role || typeof role !== 'string') {
+        return errorResponse('Role is required.', 400);
+    }
+
+    const normalizedRole = role.toUpperCase();
+    const allowedRoles = ['USER', 'ADMIN', 'GUEST'];
+
+    if (!allowedRoles.includes(normalizedRole)) {
+        return errorResponse('Invalid role.', 400);
+    }
+
+    const existingUser = await prisma.user.findUnique({
+        where: { id },
+    });
+
+    if (!existingUser) {
+        return errorResponse('User not found.', 404);
+    }
+
+    const user = await prisma.user.update({
+        where: { id },
+        data: { role: normalizedRole },
+        select: {
+            id: true,
+            name: true,
+            username: true,
+            email: true,
+            phone: true,
+            role: true,
+            isActive: true,
+            passwordResetRequired: true,
+            createdAt: true,
+            updatedAt: true,
+        },
+    });
+
+    return user;
+};
+
+export const updateUserActiveService = async (id, isActive) => {
+    if (!id) {
+        return errorResponse('User id is required.', 400);
+    }
+
+    if (typeof isActive !== 'boolean') {
+        return errorResponse('isActive must be a boolean.', 400);
+    }
+
+    const existingUser = await prisma.user.findUnique({
+        where: { id },
+    });
+
+    if (!existingUser) {
+        return errorResponse('User not found.', 404);
+    }
+
+    const user = await prisma.user.update({
+        where: { id },
+        data: { isActive },
+        select: {
+            id: true,
+            name: true,
+            username: true,
+            email: true,
+            phone: true,
+            role: true,
+            isActive: true,
+            passwordResetRequired: true,
+            createdAt: true,
+            updatedAt: true,
+        },
+    });
+
+    return user;
+};

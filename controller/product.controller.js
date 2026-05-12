@@ -41,6 +41,22 @@ export const createVanBooking = async (req, res, next) => {
     }
 };
 
+export const getVanBookingHistory = async (req, res, next) => {
+    try {
+        const result = await prisma.task.findMany();
+        res.json({
+            status: {
+                code: '200',
+                message: 'create success.',
+            },
+            result
+        });
+    } catch (error) {
+        console.log(error);
+        next(error);
+    }
+};
+
 export const getHistory = async (req, res, next) => {
     try {
         const { id } = req.params;
